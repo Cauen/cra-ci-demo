@@ -1,6 +1,8 @@
 version: 2.1
 orbs:
+  snyk: snyk/snyk@0.0.8
   cypress: cypress-io/cypress@1.23.0
+  aws-s3: circleci/aws-s3@1.0.11
 jobs:
   build:
     docker:
@@ -25,6 +27,11 @@ jobs:
             - ~/.cache
           key: v1-dependencies-{{ checksum "package.json" }}
 
+      - snyk/scan:
+          fail-on-issues: false
+          monitor-on-build: false
+          severity-threshold: high
+
       - run: yarn lint
 
       - run: yarn size
@@ -34,5 +41,3 @@ jobs:
       - run: yarn ci:cypress-run
 
       - run: yarn build
-
-      - run: echo builded
